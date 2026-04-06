@@ -10,7 +10,7 @@ import wandb
 from lightning import Callback, LightningModule, Trainer
 
 from src.nn.common.pytorch_util import dict_apply
-from src.nn.env.pusht import PushTImageEnv
+from src.nn.env.pusht_image_env import PushTImageEnv
 from src.nn.gym_util.async_vector_env import AsyncVectorEnv
 from src.nn.gym_util.multistep_wrapper import MultiStepWrapper
 from src.nn.gym_util.video_recording_wrapper import VideoRecordingWrapper
