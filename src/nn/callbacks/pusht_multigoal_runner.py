@@ -199,11 +199,13 @@ class PushTMultigoalRunner(Callback):
 
         # Log metrics
         max_rewards = collections.defaultdict(list)
+        successes = collections.defaultdict(list)
         for i in range(n_inits):
             seed = self.env_seeds[i]
             prefix = self.env_prefixs[i]
             max_reward = np.max(all_rewards[i])
             max_rewards[prefix].append(max_reward)
+            successes[prefix].append(float(max_reward > 0.95))
             pl_module.log(
                 f"val/{prefix}sim_max_reward_{seed}",
                 max_reward,
@@ -212,9 +214,11 @@ class PushTMultigoalRunner(Callback):
             )
 
         for prefix, values in max_rewards.items():
-            name = prefix + "mean_score"
             pl_module.log(
-                f"val/{name}", np.mean(values), on_epoch=True, prog_bar=True
+                f"val/{prefix}mean_score", np.mean(values), on_epoch=True, prog_bar=True
+            )
+            pl_module.log(
+                f"val/{prefix}success_rate", np.mean(successes[prefix]), on_epoch=True, prog_bar=True
             )
 
         for i, path in enumerate(all_video_paths):

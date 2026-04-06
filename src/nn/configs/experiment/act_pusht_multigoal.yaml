@@ -53,8 +53,8 @@ callbacks:
   model_checkpoint:
     save_top_k: 2
     mode: "max"
-    monitor: "val/test_mean_score"
-    filename: "epoch_{epoch:03d}-{val/test_mean_score:.3f}"
+    monitor: "val/test_success_rate"
+    filename: "epoch_{epoch:03d}-{val/test_success_rate:.3f}"
   pusht_multigoal_runner:
     _target_: src.nn.callbacks.pusht_multigoal_runner.PushTMultigoalRunner
     output_dir: ${paths.output_dir}
