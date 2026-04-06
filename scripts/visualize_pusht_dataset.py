@@ -31,7 +31,7 @@ def main():
     args = parser.parse_args()
 
     rb = ReplayBuffer.copy_from_path(
-        args.data_dir, keys=["state", "action"]
+        args.data_dir, keys=["img", "state", "action"]
     )
     n_episodes = rb.n_episodes
     assert 0 <= args.episode < n_episodes, \
@@ -41,38 +41,37 @@ def main():
     ends = rb.episode_ends  # end index (exclusive) for each episode
     ep_end = ends[args.episode]
     ep_start = 0 if args.episode == 0 else ends[args.episode - 1]
-    states = rb["state"][ep_start:ep_end]   # (T, 5): [agent_x, agent_y, block_x, block_y, block_angle]
-    actions = rb["action"][ep_start:ep_end] # (T, 2)
+    imgs = rb["img"][ep_start:ep_end]         # (T, H, W, 3) uint8 — has correct goal rendered
+    states = rb["state"][ep_start:ep_end]     # (T, 5)
+    actions = rb["action"][ep_start:ep_end]   # (T, 2)
     print(f"Episode {args.episode}: {len(actions)} steps")
 
     env = PushTImageEnv(fix_goal=True)
-    # Reset to dataset's initial state
     obs, _ = env.reset(options={"reset_to_state": states[0].tolist()})
 
     out_path = pathlib.Path(args.output or f"demo/pusht_dataset_ep{args.episode}.mp4")
     out_path.parent.mkdir(parents=True, exist_ok=True)
 
-    frame = env.render()
-    h, w = frame.shape[:2]
+    # Use dataset images for rendering: they contain the correct goal overlay
+    # from the original collection environment, which env.render() cannot reproduce.
+    h, w = imgs.shape[1], imgs.shape[2]
     writer = cv2.VideoWriter(
         str(out_path),
         cv2.VideoWriter_fourcc(*"mp4v"),
         args.fps,
         (w, h),
     )
-    writer.write(cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
+    writer.write(cv2.cvtColor(imgs[0], cv2.COLOR_RGB2BGR))
 
     for step, action in enumerate(actions):
         obs, reward, terminated, truncated, info = env.step(action)
-        frame = env.render()
-        writer.write(cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
+        writer.write(cv2.cvtColor(imgs[step + 1] if step + 1 < len(imgs) else imgs[-1], cv2.COLOR_RGB2BGR))
 
         if terminated or truncated:
             print(f"Success at step {step + 1} (coverage: {info['coverage']:.2%})")
             break
     else:
-        final_coverage = info["coverage"]
-        print(f"Finished all {len(actions)} steps (final coverage: {final_coverage:.2%})")
+        print(f"Finished all {len(actions)} steps (final coverage: {info['coverage']:.2%})")
 
     writer.release()
     env.close()
