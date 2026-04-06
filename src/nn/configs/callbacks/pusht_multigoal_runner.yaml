@@ -1,0 +1,18 @@
+pusht_multigoal_runner:
+  _target_: src.nn.callbacks.pusht_multigoal_runner.PushTMultigoalRunner
+  output_dir: ${paths.output_dir}
+  every_n_epoch: 10
+  n_train: 6
+  n_train_vis: 2
+  train_start_seed: 0
+  n_test: 22
+  n_test_vis: 6
+  test_start_seed: 10000
+  max_steps: 300
+  n_obs_steps: 2
+  n_action_steps: 8
+  render_size: 96
+  fps: 10
+  crf: 22
+  tqdm_interval_sec: 5.0
+  n_envs: null
