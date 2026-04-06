@@ -53,11 +53,11 @@ model_tuning:
   pretrained_backbone: false
 
 trainer:
-  check_val_every_n_epoch: 5
+  check_val_every_n_epoch: 1
 
 callbacks:
   model_checkpoint:
-    save_top_k: 5
+    save_top_k: 2
     mode: "max"
     monitor: "val/test_mean_score"
     filename: "epoch_{epoch:03d}-{val/test_mean_score:.3f}"
