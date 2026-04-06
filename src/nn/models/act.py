@@ -48,6 +48,7 @@ class ACTModule(LightningModule):
             warmup_steps=500,
             lr_min_ratio=0.0,
             forward_dtype=None,
+            pretrained_backbone=True,
             # parameters passed to step
             **kwargs):
         super().__init__()
@@ -114,7 +115,7 @@ class ACTModule(LightningModule):
         self.enc_latent_proj = CastedLinear(hidden_dim, latent_dim*2, bias=False)
 
         # create decoder model
-        self.vision_encoder = get_resnet(name='resnet18', weights='IMAGENET1K_V1')
+        self.vision_encoder = get_resnet(name='resnet18', weights='IMAGENET1K_V1' if pretrained_backbone else None)
         return_layers = {"layer4": "0"}
         self.vision_encoder = IntermediateLayerGetter(self.vision_encoder, return_layers=return_layers)
         self.vision_encoder = replace_submodules(

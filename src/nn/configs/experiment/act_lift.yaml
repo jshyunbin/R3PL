@@ -60,6 +60,7 @@ model_tuning:
   warmup_steps: 500
   lr_min_ratio: 0.0
   forward_dtype: null
+  pretrained_backbone: true
 
 trainer:
   check_val_every_n_epoch: 10

@@ -17,3 +17,4 @@ weight_decay: ${model_tuning.weight_decay}
 warmup_steps: ${model_tuning.warmup_steps}
 lr_min_ratio: ${model_tuning.lr_min_ratio}
 forward_dtype: ${model_tuning.forward_dtype}
+pretrained_backbone: ${model_tuning.pretrained_backbone}
