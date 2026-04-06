@@ -11,7 +11,7 @@ tags: ["act", "pusht", "multigoal"]
 timekeeping:
   max_epochs: 200
   batch_size: 256
-  num_workers: 8
+  num_workers: 0
 
 model_tuning:
   shape_meta:
