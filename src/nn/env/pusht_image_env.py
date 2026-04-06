@@ -46,7 +46,25 @@ class PushTImageEnv(gym.Env):
         self.action_space = self._env.action_space
 
     def reset(self, seed=None, options=None):
-        obs, info = self._env.reset(seed=seed, options=options)
+        reset_to_state = options.get("reset_to_state") if options else None
+
+        if reset_to_state is not None:
+            # Call reset without the state option so _setup() runs, then set
+            # state manually using angle-first order. gym_pusht's legacy _set_state
+            # sets position before angle, which shifts the block due to CoG offset;
+            # the dataset was collected with angle-first ordering (UVA convention).
+            obs, info = self._env.reset(seed=seed)
+            state = np.array(reset_to_state)
+            self._env.agent.position = list(state[:2])
+            self._env.block.angle = float(state[4])
+            self._env.block.position = list(state[2:4])
+            self._env.space.step(self._env.dt)
+            obs = self._env.get_obs()
+            info = self._env._get_info()
+            info["is_success"] = False
+        else:
+            obs, info = self._env.reset(seed=seed)
+
         if not self.fix_goal:
             rng = self._env.np_random
             self._env.goal_pose = np.array(
