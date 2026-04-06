@@ -1,0 +1,193 @@
+[project]
+name = "deep-reasoning-policy"
+version = "0.1.0"
+description = "Tiny Recursive Models (TRM) applied to robot manipulation"
+readme = "README.md"
+requires-python = "==3.12.1"
+authors = [
+    { name = "Joshua Hyunbin Lee", email = "jshyunbin@gmail.com" }
+]
+keywords = ["trm", "gram", "robotics", "reasoning"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+dependencies = [
+    "numpy<2.0.0",
+    "scipy>=1.10.0",
+    "scikit-learn>=1.3.0",
+    "pandas>=2.0.0",
+    "matplotlib>=3.7.0",
+    "seaborn>=0.12.0",
+    "tqdm>=4.65.0",
+    "colorama>=0.4.6",
+    "Pillow>=10.0.0",
+    "omegaconf>=2.3.0",
+    "lightning>=2.5.4",
+    "wandb[media]>=0.21.1",
+    "hydra-core>=1.3.2",
+    "hydra-colorlog>=1.2.0",
+    "rich>=14.1.0",
+    "taskipy>=1.12.0",
+    "torch>=2.8.0",
+    "torchvision>=0.15.0",
+    "transformers>=4.30.0",
+    "einops>=0.7.0",
+    "gym-pusht>=0.1.6",
+    "pymunk==6.6.0",
+    "h5py>=3.15.1",
+    "pytorch3d",
+    "zarr>=2,<3",
+    "imagecodecs>=2026.1.14",
+    "numba>=0.63.1",
+    "diffusers==0.11.1",
+    "dill>=0.4.1",
+    "av>=16.1.0",
+    "mujoco>=3.4.0",
+    "pyopengl-accelerate>=3.1.10",
+    "robomimic",
+    "robosuite>=1.5.2",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.5.0",
+    "ipython>=8.14.0",
+    "jupyter>=1.0.0",
+    "notebook>=7.0.0",
+    "ipywidgets>=8.0.0",
+]
+
+competition = [
+    "kaggle>=1.6.0",
+    "python-dotenv>=1.0.0",
+]
+
+visualization = [
+    "plotly>=5.14.0",
+    "bokeh>=3.1.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]
+
+[dependency-groups]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-cov>=4.1.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.5.0",
+    "ipython>=8.14.0",
+    "jupyter>=1.0.0",
+    "notebook>=7.0.0",
+]
+
+[tool.uv.extra-build-dependencies]
+pytorch3d = ["torch"]
+
+[tool.uv.sources]
+pytorch3d = { git = "https://github.com/facebookresearch/pytorch3d.git", rev = "stable" }
+robomimic = { git = "https://github.com/ARISE-Initiative/robomimic.git" }
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+extend-exclude = ["*.ipynb"]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "N",   # pep8-naming
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "C90", # mccabe complexity
+]
+ignore = [
+    "E501",  # line too long (handled by black)
+    "B008",  # do not perform function calls in argument defaults
+    "UP006", # use `dict` instead of `Dict` - ignore for compatibility
+    "N803", # lower case variables
+    "N806", # lower case variables
+    "N815", # lower case variables
+    "C901", # too complex functions
+    "F841", # unused variables
+    "E402", # import modules not at top of file
+    "E722", # do not use bare except
+    "B904", # except
+    "N812", # lower case import
+    "N801", # naming conventions
+    "UP035", # deprecated typing
+    "B011", # allow asserts
+]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]  # unused imports in __init__ files are ok
+
+[tool.ruff.lint.isort]
+known-first-party = ["arc_baseline", "arc_evaluate", "arc_submit"]
+
+[tool.black]
+line-length = 100
+target-version = ["py39", "py310", "py311", "py312"]
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+disallow_any_generics = false
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = [
+    "-ra",
+    "--strict-markers",
+    "--cov=src",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+]
+
+[tool.coverage.run]
+source = ["src"]
+omit = ["*/tests/*", "*/test_*.py"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if self.debug:",
+    "if settings.DEBUG",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if 0:",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "class .*\\bProtocol\\):",
+    "@(abc\\.)?abstractmethod",
+]
+
+[tool.taskipy.tasks]
+check-style = { "cmd" = "ruff format --diff . && ruff check .", help = "Check style."}
+format = { "cmd" = "ruff format . && ruff check --fix", help = "Format code."}

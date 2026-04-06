@@ -1,0 +1,24 @@
+_target_: src.nn.models.actrm.ACTRMModule
+_recursive_: false  # Prevent recursive instantiation of nested configs
+
+shape_meta: ${model_tuning.shape_meta}
+horizon: ${model_tuning.horizon}
+n_heads: ${model_tuning.n_heads}
+H_cycles: ${model_tuning.H_cycles}
+L_cycles: ${model_tuning.L_cycles}
+N_supervision: ${model_tuning.N_supervision}
+N_supervision_val: ${model_tuning.N_supervision_val}
+ffn_expansion: ${model_tuning.ffn_expansion}
+num_enc_layers: ${model_tuning.num_enc_layers}
+num_dec_enc_layers: ${model_tuning.num_dec_enc_layers}
+num_dec_dec_layers: ${model_tuning.num_dec_dec_layers}
+dropout: ${model_tuning.dropout}
+kl_weight: ${model_tuning.kl_weight}
+hidden_dim: ${model_tuning.hidden_dim}
+latent_dim: ${model_tuning.latent_dim}
+feedforward_dim: ${model_tuning.feedforward_dim}
+learning_rate: ${model_tuning.learning_rate}
+weight_decay: ${model_tuning.weight_decay}
+warmup_steps: ${model_tuning.warmup_steps}
+lr_min_ratio: ${model_tuning.lr_min_ratio}
+forward_dtype: ${model_tuning.forward_dtype}

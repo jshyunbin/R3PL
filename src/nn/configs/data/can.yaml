@@ -1,0 +1,18 @@
+_target_: src.nn.data.robomimic_datamodule.RobomimicDataModule
+_recursive_: false
+batch_size: ${timekeeping.batch_size}
+num_workers: ${timekeeping.num_workers}
+
+shape_meta: ${model_tuning.shape_meta}
+abs_action: true
+dataset_path: "data/robomimic/can/ph/image_abs.hdf5"
+horizon: ${model_tuning.horizon}
+n_obs_steps: ${model_tuning.n_obs_steps}
+pad_after: 7
+pad_before: 1
+rotation_rep: rotation_6d
+seed: 42
+use_cache: true
+val_ratio: 0.02
+data_aug: false
+normalizer_type: all

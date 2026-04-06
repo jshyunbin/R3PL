@@ -1,0 +1,23 @@
+_target_: src.nn.models.diffusion_policy.DiffusionPolicyModule
+_recursive_: false  # Prevent recursive instantiation of nested configs
+
+shape_meta: ${model_tuning.shape_meta}
+beta_end: ${model_tuning.beta_end}
+beta_schedule: ${model_tuning.beta_schedule}
+beta_start: ${model_tuning.beta_start}
+clip_sample: ${model_tuning.clip_sample}
+num_train_timesteps: ${model_tuning.num_train_timesteps}
+prediction_type: ${model_tuning.prediction_type}
+variance_type: ${model_tuning.variance_type}
+horizon: ${model_tuning.horizon}
+n_action_steps: ${model_tuning.n_action_steps}
+n_obs_steps: ${model_tuning.n_obs_steps}
+num_inference_steps: ${model_tuning.num_inference_steps}
+obs_as_global_cond: ${model_tuning.obs_as_global_cond}
+diffusion_step_embed_dim: ${model_tuning.diffusion_step_embed_dim}
+down_dims: ${model_tuning.down_dims}
+kernel_size: ${model_tuning.kernel_size}
+n_groups: ${model_tuning.n_groups}
+cond_predict_scale: ${model_tuning.cond_predict_scale}
+learning_rate: ${model_tuning.learning_rate}
+weight_decay: ${model_tuning.weight_decay}

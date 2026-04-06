@@ -1,0 +1,3 @@
+[submodule "src/robothink"]
+	path = src/robothink
+	url = https://github.com/jshyunbin/robothink

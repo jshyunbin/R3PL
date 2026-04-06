@@ -1,0 +1,28 @@
+_target_: src.nn.models.action_vae.ActionVAE
+_recursive_: false  # Prevent recursive instantiation of nested configs
+
+shape_meta: ${model_tuning.shape_meta}
+beta_end: ${model_tuning.beta_end}
+beta_schedule: ${model_tuning.beta_schedule}
+beta_start: ${model_tuning.beta_start}
+clip_sample: ${model_tuning.clip_sample}
+num_train_timesteps: ${model_tuning.num_train_timesteps}
+prediction_type: ${model_tuning.prediction_type}
+variance_type: ${model_tuning.variance_type}
+horizon: ${model_tuning.horizon}
+encoder_dim: ${model_tuning.encoder_dim}
+n_heads: ${model_tuning.n_heads}
+num_enc_layers: ${model_tuning.num_enc_layers}
+dropout: ${model_tuning.dropout}
+kl_weight: ${model_tuning.kl_weight}
+rope_theta: ${model_tuning.rope_theta}
+latent_dim: ${model_tuning.latent_dim}
+diffusion_step_embed_dim: ${model_tuning.diffusion_step_embed_dim}
+down_dims: ${model_tuning.down_dims}
+kernel_size: ${model_tuning.kernel_size}
+n_groups: ${model_tuning.n_groups}
+cond_predict_scale: ${model_tuning.cond_predict_scale}
+learning_rate: ${model_tuning.learning_rate}
+weight_decay: ${model_tuning.weight_decay}
+warmup_steps: ${model_tuning.warmup_steps}
+lr_min_ratio: ${model_tuning.lr_min_ratio}

@@ -1,0 +1,48 @@
+# eval_config.yaml
+checkpoint:       ./train/runs/2026-03-11_21-51-42/checkpoints/epoch_087-0.14159.ckpt
+dataset:          data/stack_color/image256.hdf5
+output_dir:       eval_output/stack_color_act
+n_episodes:       20
+seed:             10000
+max_steps:        800
+n_obs_steps:      1
+n_action_steps:   64
+render_obs_key:   agentview_image
+fps:              20
+abs_action:       true
+temporal_agg:     true
+tqdm_interval:    5.0
+
+model:
+  _target_: src.nn.models.act.ACTModule
+
+shape_meta: 
+  image_resolution: 256
+  action:
+    shape:
+    - 10
+  obs:
+    robot0_eef_pos:
+      shape:
+      - 3
+    robot0_eef_quat:
+      shape:
+      - 4
+    robot0_joint_pos:
+      shape:
+      - 7
+    robot0_eye_in_hand_image:
+      shape:
+      - 3
+      - 256
+      - 256
+      type: rgb
+    robot0_gripper_qpos:
+      shape:
+      - 2
+    agentview_image:
+      shape:
+      - 3
+      - 256
+      - 256
+      type: rgb

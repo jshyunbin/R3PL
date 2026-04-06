@@ -1,0 +1,13 @@
+_target_: src.nn.data.PushtMultitaskDataModule
+_recursive_: false
+batch_size: ${timekeeping.batch_size}
+num_workers: ${timekeeping.num_workers}
+
+data_dir: "data/pusht_multitask"
+val_ratio: 0.1
+test_ratio: 0.1
+pad_before: 1
+pad_after: 7
+horizon: 16
+max_train_episodes: null
+seed: 42

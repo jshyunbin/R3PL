@@ -1,0 +1,13 @@
+_target_: src.nn.data.PushtDataModule
+_recursive_: false
+batch_size: ${timekeeping.batch_size}
+num_workers: ${timekeeping.num_workers}
+
+data_dir: "data/pusht/pusht_cchi_v7_replay.zarr"
+val_ratio: 0.01
+test_ratio: 0.01
+pad_before: 1
+pad_after: 7
+horizon: 16
+max_train_episodes: 100
+seed: 42
