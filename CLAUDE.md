@@ -4,11 +4,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Deep reasoning policy for robot manipulation. Applies TRM (Tiny Recursive Models) concepts to ACT (Action Chunking with Transformers) for robotic tasks using Robomimic environments (lift, can, square, stack_color) and Push-T.
+Deep reasoning policy for robot manipulation. Applies generative recursive model concepts to ACT (Action Chunking with Transformers) for robotic tasks using Robomimic environments (lift, can, square, stack_color) and Push-T.
 
-Two primary models:
+Three primary models:
 - **ACT**: VAE-based transformer policy (encoder compresses actions → latent z, decoder takes vision + z → action chunk)
 - **ACTRM**: ACT extended with iterative deep reasoning (H-cycles × L-cycles in the decoder)
+- **R3P** (Recursive Reasoning Robot Policy): ACT extended with GRAM (Generative Recursive Autonomous Model) applied to the transformer decoder for continuous robot actions — same architectural insertion point as ACTRM but using GRAM's generative recursive mechanism
 
 ## Commands
 
@@ -19,7 +20,7 @@ Uses `uv` as the package manager. Python 3.12.1 required.
 **Training:**
 ```bash
 uv run python src/nn/train.py experiment=act_stack_color
-# Other experiments: act_can, actrm_can, act_lift, actrm_lift, act_square, diffusion_pusht
+# Other experiments: act_can, actrm_can, r3p_can, act_lift, actrm_lift, r3p_lift, act_square, diffusion_pusht, act_pusht_multigoal
 # Override params inline: experiment=act_can trainer.max_epochs=200 data.batch_size=64
 ```
 
@@ -60,6 +61,12 @@ Key config groups: `model/`, `data/`, `experiment/`, `trainer/`, `logger/`, `cal
 - Decoder iterates `N_supervision` times (random 1–16 during train, fixed during val) before predicting actions
 - Maintains `z_H` (high-level) and `z_L` (low-level) state vectors across reasoning cycles
 
+**R3P** (`r3p.py` → `R3PModule`) _(planned)_:
+- Same encoder as ACT (VAE: joint states + action chunk → latent z)
+- GRAM applied to the transformer decoder: generative recursive mechanism iterates over the decoder to produce continuous action outputs
+- Follows the same insertion pattern as ACTRM (recursive cycles in the decoder), but replaces TRM-style H/L cycles with GRAM's generative recursion
+- Targets continuous robot actions (as opposed to chunked discrete predictions)
+
 ### Core Modules (`src/nn/modules/trm_block.py`)
 - `Transformer` / `TransformerDecoder`: standard multi-head attention blocks
 - `CastedLinear`, `CastedEmbedding`, `CastedLayerNorm`: bfloat16-safe wrappers
@@ -70,6 +77,15 @@ Key config groups: `model/`, `data/`, `experiment/`, `trainer/`, `logger/`, `cal
 - `RobomimicReplayImageDataset`: returns sequences of images + joint states + actions
 - Joint states can use rotation_6d representation (converted from axis-angle at load time)
 - Normalizer stats (min/max or mean/std) computed from training split and passed to model
+
+### PushT Multigoal Dataset (`src/nn/data/pusht_multitask_datamodule.py`)
+- Zarr-based dataset at `data/pusht_multitask`
+- Observations: `image` (96×96 RGB), `agent_pos` (2D), `keypoint` (9 T-block keypoints → flattened to 18D), `n_contacts` (1D)
+- Actions: 2D continuous movement commands
+- Splits: configurable `val_ratio` / `test_ratio` (default 10% each); no overlap enforced
+- Config: `src/nn/configs/data/pusht_multitask.yaml` → `PushtMultitaskDataModule`
+- Eval callback: `PushTMultigoalRunner` (`src/nn/callbacks/pusht_multigoal_runner.py`) — runs rollouts with `fix_goal=False` (random goal per episode), logs per-seed max rewards and videos to W&B every N epochs
+- Experiment config: `src/nn/configs/experiment/act_pusht_multigoal.yaml`; monitors `val/test_success_rate`, saves top-2 checkpoints
 
 ### Vision (`src/nn/vision/model_getter.py`)
 - ResNet18 with IMAGENET1K_V1 pretrained weights; BatchNorm replaced with GroupNorm
