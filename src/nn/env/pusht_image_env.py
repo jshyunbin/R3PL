@@ -26,6 +26,7 @@ class PushTImageEnv(gym.Env):
         )
         self.fix_goal = fix_goal
         self.render_size = render_size
+        self._last_frame = None
 
         self.observation_space = spaces.Dict(
             {
@@ -81,9 +82,9 @@ class PushTImageEnv(gym.Env):
         return self._process_obs(obs), reward, terminated, truncated, info
 
     def render(self):
-        # Returns uint8 (H, W, 3) at visualization size.
-        # VideoRecordingWrapper.step() asserts frame.dtype == np.uint8.
-        return self._env.render()
+        # Returns the cached 96x96 uint8 (H, W, 3) observation frame.
+        # Avoids the expensive high-res render; VideoRecordingWrapper only needs uint8 HWC.
+        return self._last_frame
 
     def seed(self, seed):
         # MultiStepWrapper calls env.seed(seed) to initialize the environment.
@@ -93,7 +94,9 @@ class PushTImageEnv(gym.Env):
         self._env.close()
 
     def _process_obs(self, obs):
-        image = obs["pixels"].astype(np.float32) / 255.0  # (H, W, 3) → float [0, 1]
+        pixels = obs["pixels"]                            # uint8 (H, W, 3) at render_size
+        self._last_frame = pixels                         # cache for render()
+        image = pixels.astype(np.float32) / 255.0        # (H, W, 3) → float [0, 1]
         image = np.moveaxis(image, -1, 0)                 # HWC → CHW
         agent_pos = obs["agent_pos"].astype(np.float32)
         return {"image": image, "agent_pos": agent_pos}
