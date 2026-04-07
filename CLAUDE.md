@@ -15,8 +15,6 @@ Three primary models:
 
 Uses `uv` as the package manager. Python 3.12.1 required.
 
-> **Note:** Do not run training or test commands on the user's behalf. The user runs these themselves.
-
 **Training:**
 ```bash
 uv run python src/nn/train.py experiment=act_stack_color
