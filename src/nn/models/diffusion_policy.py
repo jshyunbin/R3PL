@@ -251,7 +251,8 @@ class DiffusionPolicyModule(LightningModule):
         
         result = {
             'action': action,
-            'action_pred': action_pred
+            'action_pred': action_pred,
+            'pred_action': action,  # alias for compatibility with runner callbacks
         }
         return result
 

@@ -21,3 +21,6 @@ n_groups: ${model_tuning.n_groups}
 cond_predict_scale: ${model_tuning.cond_predict_scale}
 learning_rate: ${model_tuning.learning_rate}
 weight_decay: ${model_tuning.weight_decay}
+warmup_steps: ${model_tuning.warmup_steps}
+lr_min_ratio: ${model_tuning.lr_min_ratio}
+rollout_during_val: ${model_tuning.rollout_during_val}
