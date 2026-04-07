@@ -469,7 +469,7 @@ class DiffusionPolicyModule(LightningModule):
 
         # Log metrics
         with torch.no_grad():
-            self.log("train/loss", metrics.get("loss", 0) / batch_size, on_step=True)
+            self.log("train/loss", metrics.get("loss", 0), on_step=True)
 
 
     def configure_optimizers(self):
