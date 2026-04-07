@@ -90,6 +90,31 @@ Always `import src.robothink.envs` before instantiating any Robomimic-based envi
 - Data stored as HDF5 under `data/`; evaluation videos under `eval_output/`
 - Rotation representation: axis-angle in dataset → converted to `rotation_6d` for model I/O
 
+## PushT Environment Notes
+
+### PushTImageEnv (`src/nn/env/pusht_image_env.py`)
+- Wraps `gym_pusht.envs.pusht.PushTEnv` directly (not via `gym.make()`) to avoid `TimeLimit`/`OrderEnforcing` wrappers
+- `fix_goal=False` randomizes goal pose per episode (x/y in [100,400], angle in [-π,π]) using the env's seeded RNG after `reset()`
+- `fix_goal=True` (default) keeps the fixed goal at (256, 256, π/4) — use for single-goal baselines
+- **Do not use pretrained ResNet for PushT** (`pretrained_backbone: false`): ImageNet weights are inappropriate for synthetic 96×96 renders
+
+### State Initialization Bug (angle-first order)
+When replaying dataset states into `gym_pusht`, **always set angle before position**:
+```python
+self._env.block.angle = float(state[4])    # angle FIRST
+self._env.block.position = list(state[2:4]) # then position
+```
+`gym_pusht._set_state()` uses legacy position-before-angle order which shifts the block due to center-of-gravity offset. The dataset was collected with angle-first, so manual initialization is required for accurate replay.
+
+### pusht_multitask dataset
+Goal pose is **not stored** in the dataset — it's only visible in rendered `img` observations. Do not try to reconstruct goal state from stored fields.
+
+### num_workers=0 with AsyncVectorEnv
+Always set `num_workers: 0` in dataloader configs when the training uses `AsyncVectorEnv`-based callbacks (e.g., `PushTMultigoalRunner`). Fork-based `AsyncVectorEnv` workers conflict with spawn-based PyTorch dataloader workers and cause silent crashes under `nohup` with no Python traceback.
+
+### wandb
+Currently configured for offline mode (`offline: true` in `src/nn/configs/logger/wandb.yaml`). To sync a completed run: `wandb sync <run_dir>/wandb/offline-run-*`
+
 ## Observation Indexing Design (Important)
 
 Training batches and inference inputs have different observation structures — this is **intentional**:
