@@ -92,5 +92,5 @@ callbacks:
     tqdm_interval_sec: 5.0
     n_envs: null
 
-save_dir: /tmp/ml-experiments
+save_dir: null
 append_wandb_name_to_save_dir: true

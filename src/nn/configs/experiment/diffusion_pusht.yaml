@@ -75,5 +75,5 @@ callbacks:
     filename: "epoch_{epoch:03d}-{val/reward:.1f}"
 
 
-save_dir: /tmp/ml-experiments
+save_dir: null
 append_wandb_name_to_save_dir: true
