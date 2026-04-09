@@ -9,8 +9,8 @@ defaults:
 tags: ["diffusion_policy", "pusht", "multigoal"]
 
 timekeeping:
-  max_epochs: 200
-  batch_size: 256
+  max_epochs: 2000
+  batch_size: 512
   num_workers: 0
 
 model_tuning:
@@ -70,9 +70,10 @@ callbacks:
     use_ema_for_test: true
   model_checkpoint:
     save_top_k: 2
+    save_last: true
     mode: "max"
-    monitor: "val/test_success_rate"
-    filename: "epoch_{epoch:03d}-{val/test_success_rate:.3f}"
+    monitor: "val/test_mean_score"
+    filename: "epoch_{epoch:03d}-{val/test_mean_score:.3f}"
   pusht_multigoal_runner:
     _target_: src.nn.callbacks.pusht_multigoal_runner.PushTMultigoalRunner
     output_dir: ${paths.output_dir}
