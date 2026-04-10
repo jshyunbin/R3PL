@@ -20,6 +20,7 @@ from src.nn.modules import (
 from src.nn.modules.utils import compute_lr
 from src.nn.vision.model_getter import get_resnet
 from src.nn.common.pytorch_util import dict_apply, replace_submodules
+from src.nn.common.normalize_util import get_resnet_imagenet_normalizer
 from src.nn.utils import RankedLogger
 import wandb
 
@@ -50,6 +51,7 @@ class DiffusionPolicyModule(LightningModule):
             warmup_steps=500,
             lr_min_ratio=0.0,
             rollout_during_val=True,
+            pretrained_backbone=True,
             # parameters passed to step
             **kwargs):
         super().__init__()
@@ -84,7 +86,8 @@ class DiffusionPolicyModule(LightningModule):
             cond_predict_scale=cond_predict_scale,
         )
 
-        self.obs_encoder = get_resnet(name='resnet18')
+        weights = 'IMAGENET1K_V1' if pretrained_backbone else None
+        self.obs_encoder = get_resnet(name='resnet18', weights=weights)
         # replace batchnorm with groupnorm
         self.obs_encoder = replace_submodules(
             self.obs_encoder, 
@@ -258,6 +261,8 @@ class DiffusionPolicyModule(LightningModule):
 
     # ========= training  ============
     def set_normalizer(self, normalizer: LinearNormalizer):
+        if self.hparams.pretrained_backbone:
+            normalizer["image"] = get_resnet_imagenet_normalizer()
         self.normalizer.load_state_dict(normalizer.state_dict())
 
     def compute_loss_and_metrics(self, batch: Dict[str, torch.Tensor]) -> torch.Tensor:

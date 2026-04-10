@@ -19,6 +19,7 @@ down_dims: ${model_tuning.down_dims}
 kernel_size: ${model_tuning.kernel_size}
 n_groups: ${model_tuning.n_groups}
 cond_predict_scale: ${model_tuning.cond_predict_scale}
+pretrained_backbone: ${model_tuning.pretrained_backbone}
 learning_rate: ${model_tuning.learning_rate}
 weight_decay: ${model_tuning.weight_decay}
 warmup_steps: ${model_tuning.warmup_steps}

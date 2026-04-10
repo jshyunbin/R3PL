@@ -49,6 +49,7 @@ model_tuning:
   kernel_size: 5
   n_groups: 8
   cond_predict_scale: true
+  pretrained_backbone: true
   learning_rate: 1e-4
   weight_decay: 1e-6
   warmup_steps: 500

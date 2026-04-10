@@ -23,6 +23,8 @@ p_drop_emb: ${model_tuning.p_drop_emb}
 p_drop_attn: ${model_tuning.p_drop_attn}
 causal_attn: ${model_tuning.causal_attn}
 n_cond_layers: ${model_tuning.n_cond_layers}
+# vision
+pretrained_backbone: ${model_tuning.pretrained_backbone}
 # training
 learning_rate: ${model_tuning.learning_rate}
 weight_decay: ${model_tuning.weight_decay}
