@@ -361,16 +361,13 @@ class DiffusionPolicyModule(LightningModule):
         current_step = self.manual_step
         base_lr = self.hparams.learning_rate
 
-        if current_step < self.hparams.warmup_steps:
-            lr_this_step = compute_lr(
-                base_lr=base_lr,
-                lr_warmup_steps=self.hparams.warmup_steps,
-                lr_min_ratio=self.hparams.lr_min_ratio,
-                current_step=current_step,
-                total_steps=self.total_steps,
-            )
-        else:
-            lr_this_step = base_lr
+        lr_this_step = compute_lr(
+            base_lr=base_lr,
+            lr_warmup_steps=self.hparams.warmup_steps,
+            lr_min_ratio=self.hparams.lr_min_ratio,
+            current_step=current_step,
+            total_steps=self.total_steps,
+        )
 
         for param_group in opt.param_groups:
             param_group['lr'] = lr_this_step

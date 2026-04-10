@@ -1,0 +1,99 @@
+# @package _global_
+
+defaults:
+  - override /data: pusht_multitask
+  - override /model: diffusion_transformer_policy
+  - override /callbacks: default
+  - override /trainer: gpu
+
+tags: ["diffusion_transformer_policy", "pusht", "multigoal"]
+
+timekeeping:
+  max_epochs: 2000
+  batch_size: 512
+  num_workers: 0
+
+model_tuning:
+  shape_meta:
+    action:
+      shape:
+      - 2
+    obs:
+      agent_pos:
+        shape:
+        - 2
+        type: low_dim
+      image:
+        shape:
+        - 3
+        - 96
+        - 96
+        type: rgb
+  # diffusion
+  beta_end: 0.02
+  beta_schedule: squaredcos_cap_v2
+  beta_start: 0.0001
+  clip_sample: true
+  num_train_timesteps: 100
+  prediction_type: epsilon
+  variance_type: fixed_small
+  num_inference_steps: 100
+  # action
+  horizon: 16
+  n_action_steps: 8
+  n_obs_steps: 2
+  # transformer architecture
+  n_layer: 8
+  n_head: 4
+  n_emb: 256
+  p_drop_emb: 0.0
+  p_drop_attn: 0.3
+  causal_attn: true
+  n_cond_layers: 0
+  # training
+  learning_rate: 1e-4
+  weight_decay: 1e-3
+  warmup_steps: 1000
+  lr_min_ratio: 0.0
+  rollout_during_val: false
+
+trainer:
+  check_val_every_n_epoch: 1
+
+callbacks:
+  ema:
+    _target_: src.nn.callbacks.ema.EMACallback
+    decay: null
+    inv_gamma: 1.0
+    max_value: 0.9999
+    min_value: 0.0
+    power: 0.75
+    use_ema_for_validation: true
+    use_ema_for_test: true
+  model_checkpoint:
+    save_top_k: 2
+    save_last: true
+    mode: "max"
+    monitor: "val/test_mean_score"
+    filename: "epoch_{epoch:03d}-{val/test_mean_score:.3f}"
+  pusht_multigoal_runner:
+    _target_: src.nn.callbacks.pusht_multigoal_runner.PushTMultigoalRunner
+    output_dir: ${paths.output_dir}
+    every_n_epoch: 5
+    n_train: 6
+    n_train_vis: 2
+    train_start_seed: 0
+    n_test: 22
+    n_test_vis: 6
+    test_start_seed: 10000
+    max_steps: 300
+    n_obs_steps: ${model_tuning.n_obs_steps}
+    n_action_steps: ${model_tuning.n_action_steps}
+    render_size: 96
+    fps: 10
+    crf: 22
+    tqdm_interval_sec: 5.0
+    n_envs: null
+
+save_dir: null
+append_wandb_name_to_save_dir: true
