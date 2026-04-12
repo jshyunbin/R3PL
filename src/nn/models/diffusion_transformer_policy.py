@@ -148,12 +148,14 @@ class DiffusionTransformerPolicyModule(LightningModule):
     def _encode_obs(self, nobs: dict, B: int) -> torch.Tensor:
         """Returns cond tensor (B, To, cond_dim)."""
         To = self.n_obs_steps
+        # Use the LAST To obs steps so training matches inference convention:
+        # inference provides [obs_{t-1}, obs_t] (oldest first, current last).
         this_nobs = dict_apply(
-            nobs, lambda x: x[:, :To, ...].reshape(-1, *x.shape[2:])
+            nobs, lambda x: x[:, -To:, ...].reshape(-1, *x.shape[2:])
         )
         nobs_features = self.obs_encoder(this_nobs["image"])  # (B*To, 512)
         cond = nobs_features.reshape(B, To, -1)               # (B, To, 512)
-        cond = torch.cat([cond, nobs["agent_pos"][:, :To]], dim=-1)  # (B, To, 514)
+        cond = torch.cat([cond, nobs["agent_pos"][:, -To:]], dim=-1)  # (B, To, 514)
         return cond
 
     def conditional_sample(
