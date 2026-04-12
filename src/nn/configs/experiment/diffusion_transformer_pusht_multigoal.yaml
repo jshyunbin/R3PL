@@ -54,7 +54,7 @@ model_tuning:
   pretrained_backbone: true
   # training
   learning_rate: 1e-4
-  weight_decay: 1e-3
+  weight_decay: 1e-6
   warmup_steps: 1000
   lr_min_ratio: 0.0
   rollout_during_val: false

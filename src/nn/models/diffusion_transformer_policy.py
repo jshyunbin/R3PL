@@ -269,6 +269,8 @@ class DiffusionTransformerPolicyModule(LightningModule):
         if batch_idx % 50 == 0:
             self._grad_monitoring()
 
+        torch.nn.utils.clip_grad_norm_(self.parameters(), max_norm=1.0)
+
         current_step = self.manual_step
         base_lr = self.hparams.learning_rate
 
